@@ -53,8 +53,21 @@
     .reference{ font-weight:bold; color:var(--primary); }
     .answer{ margin:1rem 0; padding:1rem; background:#e8f5e9; border-radius:8px; display:none; }
 
-    .timer{ font-size:2.1rem; text-align:center; color:#ff9800; margin:1rem 0; font-weight:bold; }
-    .timer-note{ text-align:center; font-size:1.05rem; color:#666; margin-top:-0.5rem; }
+    .timer {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-size: 1.1rem;           /* smaller so it’s not dominant */
+    font-weight: 600;
+    color: #9e9e9e;              /* subtle grey */
+  }
+      .timer-note {
+    position: absolute;
+    top: 36px;
+    right: 14px;
+    font-size: 0.85rem;
+    color: #b0b0b0;
+  }
 
     .options{ display:flex; gap:1rem; justify-content:center; margin-top:1rem; }
     .summary{ text-align:center; font-size:1.4rem; }
