@@ -6,101 +6,127 @@
 <title>Oxford ABE ReadyAnswers Quiz</title>
 
 <style>
-:root { --primary:#4CAF50; --dark:#333; }
+/* ================= THEME ================= */
+:root {
+  --bg-top: #0b1a4a;
+  --bg-bottom: #050b2c;
+  --text-main: #ffffff;
+  --text-muted: rgba(255,255,255,0.8);
+  --border-soft: rgba(255,255,255,0.4);
+  --panel-soft: rgba(255,255,255,0.08);
+}
 
 /* ================= BASE ================= */
 body {
-  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
-               "Helvetica Neue", Roboto, Arial, sans-serif;
-  background:linear-gradient(to bottom,#e0f7fa,#ffffff);
-  margin:0;
-  padding:1rem;
-  color:var(--dark);
-  font-size:18px;
+  font-family: sans-serif;
+  background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+  margin: 0;
+  padding: 1rem;
+  color: var(--text-main);
+  font-size: 18px;
 }
 
 /* Remove italics everywhere */
 i, em { font-style: normal !important; }
 
-h1 { text-align:center; color:var(--primary); }
-
-.card{
-  background:white;
-  border-radius:12px;
-  padding:1.5rem;
-  margin:1rem auto;
-  max-width:600px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+h1 {
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
 }
 
-select, button, input{
-  font-size:1.15rem;
-  padding:0.65rem;
-  border-radius:8px;
-  border:1px solid #ccc;
+/* ================= CARD ================= */
+.card {
+  background: transparent;
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin: 1rem auto;
+  max-width: 900px;
+  position: relative;
 }
 
-button{
-  background:var(--primary);
-  color:white;
-  cursor:pointer;
+/* ================= FORM CONTROLS ================= */
+select, button, input {
+  font-size: 1.1rem;
+  padding: 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-soft);
+  background: var(--panel-soft);
+  color: var(--text-main);
 }
 
-button:disabled{ background:#ccc; }
+button {
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+button:disabled {
+  opacity: 0.4;
+}
 
 /* ================= QUESTION ================= */
-.question{
-  font-size:1.75rem;
-  font-weight:800;
-  margin:1.5rem 0;
-  line-height:1.35;
+.reference {
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
 }
 
-/* ================= TIMER (SUBTLE, TOP-RIGHT) ================= */
-.timer{
-  position:absolute;
-  top:12px;
-  right:14px;
-  font-size:1.05rem;
-  font-weight:600;
-  color:#9e9e9e;      /* subtle grey */
+.question {
+  font-size: 2.4rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 1.5rem 0;
 }
 
-.timer-note{
-  position:absolute;
-  top:34px;
-  right:14px;
-  font-size:0.8rem;
-  color:#b5b5b5;
+/* ================= TIMER ================= */
+.timer {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.timer-note {
+  position: absolute;
+  top: 34px;
+  right: 16px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 /* ================= ANSWER ================= */
-.answer{
-  margin:1rem 0;
-  padding:1rem;
-  background:#e8f5e9;
-  border-radius:8px;
-  display:none;
+.answer {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 10px;
+  background: var(--panel-soft);
+  display: none;
+  font-size: 1.2rem;
 }
 
-.options{
-  display:flex;
-  gap:1rem;
-  justify-content:center;
-  margin-top:1rem;
+/* ================= OPTIONS ================= */
+.options {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
 }
 
-.hidden{ display:none; }
+.hidden { display: none; }
 
-.got-it{ background:#4CAF50; }
-.incorrect{ background:#f44336; }
-.skip-btn{ background:#757575; }
+.got-it { border-color: #4CAF50; }
+.incorrect { border-color: #f44336; }
+.skip-btn { border-color: #9e9e9e; }
 
 /* ================= MOBILE ================= */
-@media (max-width:480px){
-  body{ font-size:19px; }
-  .question{ font-size:1.6rem; }
-  .options{ flex-direction:column; }
+@media (max-width: 480px) {
+  body { font-size: 19px; }
+  .question { font-size: 1.8rem; }
+  .options { flex-direction: column; }
 }
 </style>
 </head>
