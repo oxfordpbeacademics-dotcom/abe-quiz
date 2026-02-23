@@ -5,204 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Oxford ABE ReadyAnswers Quiz</title>
   <style>
-    :root{
-      --primary:#ffffff;                /* simplified: white for headings */
-      --accent:#7aa7ff;                 /* soft accent (optional) */
-      --bgTop:#0b1a4a;                  /* official dark */
-      --bgBottom:#050b2c;
-      --card:rgba(255,255,255,0.06);    /* subtle panel */
-      --border:rgba(255,255,255,0.18);
-      --text:#ffffff;
-      --muted:rgba(255,255,255,0.82);
-      --muted2:rgba(255,255,255,0.65);
-    }
+    :root { --primary:#4CAF50; --light:#f9f9f9; --dark:#333; }
 
     /* ✅ Global font bump for readability (esp. small devices) */
-    body{
-      font-family: sans-serif;
-      background: linear-gradient(180deg, var(--bgTop), var(--bgBottom));
-      margin:0;
-      padding:1rem;
-      color:var(--text);
+    body {
+      font-family:'Comic Sans MS', cursive, sans-serif;
+      background:linear-gradient(to bottom,#e0f7fa,#ffffff);
+      margin:0; padding:1rem; color:var(--dark);
       font-size:18px;
     }
 
-    h1{
-      text-align:center;
-      color:var(--primary);
-      font-weight:800;
-      letter-spacing:0.06em;
-      margin:0.5rem 0 1rem 0;
-    }
+    h1 { text-align:center; color:var(--primary); }
 
     .card{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius:14px;
-      padding:1.5rem;
-      margin:1rem auto;
-      max-width:860px; /* a bit wider feels more “official” */
-      box-shadow:none;
-      backdrop-filter: blur(6px);
+      background:white; border-radius:12px; padding:1.5rem;
+      margin:1rem auto; max-width:600px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
     }
 
     /* ✅ Slightly bigger controls */
     select, button, input{
-      font-size:1.15rem;
-      padding:0.65rem;
-      margin:0.5rem 0;
-      border-radius:10px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-      outline:none;
+      font-size:1.15rem; padding:0.65rem; margin:0.5rem 0;
+      border-radius:8px; border:1px solid #ccc;
     }
 
-    select option { color:#111; } /* dropdown list readability on some browsers */
-
-    button{
-      background: rgba(255,255,255,0.10);
-      color: var(--text);
-      cursor:pointer;
-      transition:0.15s;
-      border:1px solid rgba(255,255,255,0.35);
-      font-weight:700;
-      letter-spacing:0.03em;
-    }
-    button:hover{ background: rgba(255,255,255,0.16); }
-    button:disabled{ background: rgba(255,255,255,0.06); cursor:not-allowed; opacity:0.6; }
+    button{ background:var(--primary); color:white; cursor:pointer; transition:0.2s; }
+    button:hover{ background:#45a049; }
+    button:disabled{ background:#ccc; cursor:not-allowed; opacity:0.6; }
 
     /* ✅ Remove italics everywhere */
     i, em { font-style: normal !important; }
 
     /* ✅ Bigger, bold, no italics for questions */
     .question{
-      font-size:2.1rem;
-      font-weight:750;
+      font-size:1.75rem;
+      font-weight:800;
       font-style:normal;
-      margin:1.2rem 0 0.9rem 0;
-      line-height:1.32;
-      color: var(--text);
+      margin:1.5rem 0;
+      line-height:1.35;
     }
     /* Force-disable italics if any slip through */
     .question i, .question em, #answer i, #answer em { font-style:normal !important; }
 
-    .reference{
-      font-weight:700;
-      color: var(--muted);
-      letter-spacing:0.02em;
-      font-size:1.05rem;
-    }
+    .reference{ font-weight:bold; color:var(--primary); }
+    .answer{ margin:1rem 0; padding:1rem; background:#e8f5e9; border-radius:8px; display:none; }
 
-    .answer{
-      margin:1rem 0;
-      padding:1rem;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.16);
-      border-radius:12px;
-      display:none;
-      color: var(--text);
-      font-size:1.15rem;
-      line-height:1.45;
-    }
+    .timer{ font-size:2.1rem; text-align:center; color:#ff9800; margin:1rem 0; font-weight:bold; }
+    .timer-note{ text-align:center; font-size:1.05rem; color:#666; margin-top:-0.5rem; }
 
-    .timer{
-      font-size:2.0rem;
-      text-align:center;
-      color: var(--muted);
-      margin:0.6rem 0 0.2rem 0;
-      font-weight:800;
-      letter-spacing:0.03em;
-    }
-
-    .timer-note{
-      text-align:center;
-      font-size:1.05rem;
-      color: var(--muted2);
-      margin-top:-0.25rem;
-    }
-
-    .options{
-      display:flex;
-      gap:1rem;
-      justify-content:center;
-      margin-top:1rem;
-    }
-
+    .options{ display:flex; gap:1rem; justify-content:center; margin-top:1rem; }
     .summary{ text-align:center; font-size:1.4rem; }
     .hidden{ display:none; }
-
-    /* Simplify colours: only neutral button styles */
-    .got-it{ background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.55); }
-    .incorrect{ background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.35); }
-    .partial-btn{ background: rgba(255,255,255,0.10); color:white; border-color: rgba(255,255,255,0.35); }
-    .skip-btn{ background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.25); }
+    .got-it{ background:#4CAF50; }
+    .incorrect{ background:#f44336; }
+    .partial-btn{ background:#ff9800; color:white; }
 
     .test-complete{
-      font-size:1.6rem;
-      color: var(--primary);
-      margin-bottom:1rem;
-      display:block !important;
-      font-weight:800;
-      text-align:center;
-      letter-spacing:0.04em;
+      font-size:1.6rem; color:var(--primary); margin-bottom:1rem;
+      display:block !important; font-weight:bold; text-align:center;
     }
 
     .card button, .summary button{
-      display:block;
-      margin:0.5rem auto;
-      width:100%;
-      max-width:240px;
+      display:block; margin:0.5rem auto; width:100%; max-width:200px;
     }
     .options button{ flex:1; max-width:none; }
+    .skip-btn{ background:#757575; }
 
     /* ✅ Mobile bump */
     @media (max-width:480px){
       body{ font-size:19px; }
       .card{ padding:1rem; }
       .options{ flex-direction:column; }
-      .question{ font-size:1.75rem; }
+      .question{ font-size:1.6rem; }
       select, button, input{ font-size:1.2rem; }
-      .timer{ font-size:2.05rem; }
-      .timer-note{ font-size:1.05rem; }
+      .timer{ font-size:2.2rem; }
+      .timer-note{ font-size:1.1rem; }
     }
 
     .footer-credit{
-      position:fixed;
-      bottom:10px;
-      right:10px;
-      font-size:0.85rem;
-      color: rgba(255,255,255,0.55);
-      text-align:right;
-      z-index:1000;
+      position:fixed; bottom:10px; right:10px;
+      font-size:0.85rem; color:#666; text-align:right; z-index:1000;
     }
 
     .isaiah-summary, .isaiah-commentary{
-      max-width:800px;
-      line-height:1.6;
-      text-align:left;
-      color: var(--text);
+      max-width:800px; line-height:1.6; text-align:left;
     }
-    .isaiah-summary h2{
-      color: var(--primary);
-      text-align:center;
-      font-size:2rem;
-      letter-spacing:0.04em;
-      font-weight:800;
-    }
+    .isaiah-summary h2{ color:var(--primary); text-align:center; font-size:2rem; }
     .isaiah-summary h3, .isaiah-commentary h3{
-      color: var(--muted);
-      font-size:1.4rem;
-      margin-top:1.5rem;
-      font-weight:800;
+      color:#ff9800; font-size:1.4rem; margin-top:1.5rem; font-weight:bold;
     }
-    .isaiah-summary p, .isaiah-commentary p{
-      margin-bottom:1rem;
-      font-size:1.15rem;
-      color: var(--muted);
-    }
+    .isaiah-summary p, .isaiah-commentary p{ margin-bottom:1rem; font-size:1.15rem; }
     .isaiah-summary ol{ padding-left:1.5rem; }
-    .isaiah-summary li{ margin-bottom:0.5rem; font-size:1.15rem; color: var(--muted); }
+    .isaiah-summary li{ margin-bottom:0.5rem; font-size:1.15rem; }
 
     .nav-buttons{ text-align:center; margin:1rem 0; }
     .nav-buttons button{ margin:0 0.5rem; }
@@ -210,37 +104,17 @@
     .wizard-step{ display:none; }
     .wizard-step.active{ display:block; }
     .wizard-progress{
-      text-align:center;
-      margin:1rem 0;
-      font-size:1.2rem;
-      color: var(--muted);
-      font-weight:800;
-      letter-spacing:0.03em;
+      text-align:center; margin:1rem 0; font-size:1.2rem;
+      color:var(--primary); font-weight:bold;
     }
     .wizard-buttons{
-      display:flex;
-      justify-content:space-between;
-      gap:1rem;
-      margin-top:1.5rem;
+      display:flex; justify-content:space-between; gap:1rem; margin-top:1.5rem;
     }
     .wizard-buttons button{ flex:1; max-width:150px; }
-
-    .wizard-finished{
-      text-align:center;
-      font-size:1.5rem;
-      color: var(--primary);
-      padding:1rem;
-      font-weight:800;
-    }
-
+    .wizard-finished{ text-align:center; font-size:1.5rem; color:var(--primary); padding:1rem; }
     .name-prompt{
-      text-align:center;
-      padding:1rem;
-      background: rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.18);
-      border-radius:12px;
-      margin:1rem 0;
-      color: var(--text);
+      text-align:center; padding:1rem; background:#fff3cd;
+      border:1px solid #ffeaa7; border-radius:8px; margin:1rem 0;
     }
     @media (max-width:480px){
       .wizard-buttons{ flex-direction:column; }
@@ -337,7 +211,7 @@
 
       <div id="wizard-finished-summary" class="wizard-finished hidden">
         <h3>🎉 You finished the Isaiah Adventure! Great job exploring God's story! 🏆</h3>
-        <p style="color:var(--muted);">Now you're ready for the quiz—head back and test your knowledge!</p>
+        <p>Now you're ready for the quiz—head back and test your knowledge!</p>
         <button onclick="resetWizardSummary()">Read Again from Start 🔄</button>
       </div>
     </div>
@@ -393,7 +267,7 @@
 
       <div id="wizard-finished-commentary" class="wizard-finished hidden">
         <h3>🎉 You finished the Isaiah Commentary! Great job diving deeper into God's word! 🏆</h3>
-        <p style="color:var(--muted);">Now you're ready for the quiz—head back and test your knowledge!</p>
+        <p>Now you're ready for the quiz—head back and test your knowledge!</p>
         <button onclick="resetWizardCommentary()">Read Again from Start 🔄</button>
       </div>
     </div>
@@ -463,14 +337,14 @@
 
     <div class="options hidden" id="partialOptions"></div>
 
-    <div style="margin-top:1rem; text-align:center; color: var(--muted);">
+    <div style="margin-top:1rem; text-align:center;">
       <strong>Progress:</strong> <span id="progress">0 / 0</span>
     </div>
   </div>
 
   <!-- ==== SUMMARY ==== -->
   <div id="summary" class="card hidden summary">
-    <h2 style="margin-top:0; color: var(--primary); letter-spacing:0.04em;">🎉 Quiz Complete!</h2>
+    <h2>🎉 Quiz Complete!</h2>
     <div class="test-complete">Test Complete! Great Job! 🏆</div>
     <p><strong>Hi <span id="nameDisplay"></span>!</strong></p>
     <p><strong>Total Questions:</strong> <span id="totalQ"></span></p>
@@ -510,7 +384,7 @@
     let earned = 0, possible = 0, userName = '';
     let timerInterval = null, timeLeft = 30;
 
-    /* ✅ delay timer so countdown starts 5 seconds after question appears */
+    /* ✅ NEW: delay timer so countdown starts 5 seconds after question appears */
     let delayInterval = null;
     let delayLeft = 0;
 
@@ -531,8 +405,10 @@
     let wizardStartTimeCommentary = 0;
     const totalStepsCommentary = 4;
 
+    // ✅ Remove only italics tags from API-provided HTML
     function removeItalicsTags(html) {
-      return String(html || "").replace(/<\/?(i|em)\b[^>]*>/gi, "");
+      return String(html || "")
+        .replace(/<\/?(i|em)\b[^>]*>/gi, "");
     }
 
     function clearAllTimers() {
@@ -540,6 +416,7 @@
       if (delayInterval) { clearInterval(delayInterval); delayInterval = null; }
     }
 
+    // Navigation functions
     function showIsaiahSummary() {
       if (!document.getElementById('quiz').classList.contains('hidden')) {
         alert('Please finish the quiz first before viewing the summary!');
@@ -623,13 +500,15 @@
       document.getElementById('backToConfig').style.display = 'none';
     }
 
+    // Summary Wizard functions
     function initWizardSummary() {
       const savedStep = localStorage.getItem('isaiahStepSummary');
       currentStepSummary = savedStep !== null ? parseInt(savedStep) : 0;
 
       const savedStart = localStorage.getItem('isaiahStartTimeSummary');
-      if (savedStart) wizardStartTimeSummary = parseInt(savedStart);
-      else {
+      if (savedStart) {
+        wizardStartTimeSummary = parseInt(savedStart);
+      } else {
         wizardStartTimeSummary = Date.now();
         localStorage.setItem('isaiahStartTimeSummary', wizardStartTimeSummary);
       }
@@ -696,8 +575,11 @@
         completed: true
       });
 
-      try { await fetch(API_URL, { method: 'POST', body: logData }); }
-      catch (err) { console.error('Summary log failed:', err); }
+      try {
+        await fetch(API_URL, { method: 'POST', body: logData });
+      } catch (err) {
+        console.error('Summary log failed:', err);
+      }
     }
 
     function resetWizardSummary() {
@@ -711,13 +593,15 @@
       updateStepSummary();
     }
 
+    // Commentary Wizard functions
     function initWizardCommentary() {
       const savedStep = localStorage.getItem('isaiahStepCommentary');
       currentStepCommentary = savedStep !== null ? parseInt(savedStep) : 0;
 
       const savedStart = localStorage.getItem('isaiahStartTimeCommentary');
-      if (savedStart) wizardStartTimeCommentary = parseInt(savedStart);
-      else {
+      if (savedStart) {
+        wizardStartTimeCommentary = parseInt(savedStart);
+      } else {
         wizardStartTimeCommentary = Date.now();
         localStorage.setItem('isaiahStartTimeCommentary', wizardStartTimeCommentary);
       }
@@ -784,8 +668,11 @@
         completed: true
       });
 
-      try { await fetch(API_URL, { method: 'POST', body: logData }); }
-      catch (err) { console.error('Commentary log failed:', err); }
+      try {
+        await fetch(API_URL, { method: 'POST', body: logData });
+      } catch (err) {
+        console.error('Commentary log failed:', err);
+      }
     }
 
     function resetWizardCommentary() {
@@ -807,8 +694,11 @@
         const data = await response.json();
         allQuestions = Array.isArray(data) ? data : [];
 
-        if (allQuestions.length === 0) throw new Error('No questions found in data.');
+        if (allQuestions.length === 0) {
+          throw new Error('No questions found in data.');
+        }
 
+        // ✅ Force book list to ONLY Isaiah
         const bookSel = document.getElementById('bookSelect');
         bookSel.innerHTML = '';
         const opt = document.createElement('option');
@@ -817,6 +707,7 @@
         bookSel.appendChild(opt);
         bookSel.value = FIXED_BOOK;
 
+        // ✅ Show ONLY Isaiah chapters 6–19
         const chapSel = document.getElementById('chapterSelect');
         chapSel.innerHTML = '';
         for (let i = ISAIAH_CHAPTER_MIN; i <= ISAIAH_CHAPTER_MAX; i++) {
@@ -862,7 +753,9 @@
         }
 
         const validQs = parsed.filter(q => (q.QuestionText && String(q.QuestionText).trim()) || (q.Question && String(q.Question).trim()));
-        if (validQs.length === 0) throw new Error("Questions loaded, but none have text fields — check your Sheet headers.");
+        if (validQs.length === 0) {
+          throw new Error("Questions loaded, but none have text fields — check your Sheet headers.");
+        }
 
         quizQuestions = validQs;
 
@@ -898,7 +791,7 @@
 
       document.getElementById('qtext').innerHTML = `
         ${questionText}
-        <div style="font-size:1.05rem; color: rgba(255,255,255,0.75); margin-top:0.5rem; font-weight:700;">
+        <div style="font-size:1.05rem; color:#555; margin-top:0.5rem; font-weight:700;">
           <strong>${marks} point${marks > 1 ? 's' : ''}</strong>
         </div>
       `;
@@ -931,19 +824,24 @@
         timedOut: false
       };
 
+      // ✅ NEW RULES:
+      // - Default time: 30 seconds
+      // - If marks > 3: 35 seconds
+      // - Countdown starts 5 seconds after question is shown
       const baseTime = (marks > 3) ? 35 : 30;
       timeLeft = baseTime;
 
       const timerEl = document.getElementById('timer');
       const noteEl = document.getElementById('timerNote');
 
-      timerEl.style.color = 'rgba(255,255,255,0.82)';
+      timerEl.style.color = '#ff9800';
       timerEl.textContent = timeLeft;
       timerEl.classList.remove('hidden');
 
       delayLeft = 5;
       noteEl.textContent = `Starting in ${delayLeft}...`;
 
+      // delay countdown note
       delayInterval = setInterval(() => {
         delayLeft--;
         if (delayLeft > 0) {
@@ -951,8 +849,9 @@
         } else {
           clearInterval(delayInterval);
           delayInterval = null;
-          noteEl.textContent = '';
+          noteEl.textContent = ''; // clear note once timer starts
 
+          // start real countdown
           timerInterval = setInterval(() => {
             timeLeft--;
             timerEl.textContent = timeLeft;
@@ -985,8 +884,9 @@
       const timerEl = document.getElementById('timer');
       document.getElementById('timerNote').textContent = '';
       timerEl.textContent = '⏰ Time’s up!';
-      timerEl.style.color = 'rgba(255,120,120,0.95)';
+      timerEl.style.color = '#f44336';
       clearAllTimers();
+      // user still presses "Show Answer"
     }
 
     function revealAnswerForFeedback(trigger) {
@@ -1020,6 +920,7 @@
       currentQuestionData.clickPattern = 'skip';
 
       logQuestion(currentQuestionData);
+
       setTimeout(() => advanceQuestion(), 1200);
     }
 
@@ -1125,8 +1026,11 @@
         questionLogs: JSON.stringify(questionLogs)
       });
 
-      try { await fetch(API_URL, { method: 'POST', body: logData }); }
-      catch (err) { console.error('Full log failed:', err); }
+      try {
+        await fetch(API_URL, { method: 'POST', body: logData });
+      } catch (err) {
+        console.error('Full log failed:', err);
+      }
     }
 
     function logQuestion(qData) {
@@ -1145,6 +1049,7 @@
       questionLogs.push(logEntry);
     }
 
+    // Start
     loadConfig();
   </script>
 </body>
