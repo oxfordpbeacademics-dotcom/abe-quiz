@@ -4,248 +4,252 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Oxford ABE ReadyAnswers Quiz</title>
-  <style>
-    :root{
-      --primary:#ffffff;                /* simplified: white for headings */
-      --accent:#7aa7ff;                 /* soft accent (optional) */
-      --bgTop:#0b1a4a;                  /* official dark */
-      --bgBottom:#050b2c;
-      --card:rgba(255,255,255,0.06);    /* subtle panel */
-      --border:rgba(255,255,255,0.18);
-      --text:#ffffff;
-      --muted:rgba(255,255,255,0.82);
-      --muted2:rgba(255,255,255,0.65);
-    }
+<style>
+:root{
+  --bg1:#071233;
+  --bg2:#050a22;
+  --panel: rgba(255,255,255,0.06);
+  --panel2: rgba(255,255,255,0.08);
+  --border: rgba(255,255,255,0.14);
+  --border2: rgba(255,255,255,0.22);
+  --text: #ffffff;
+  --muted: rgba(255,255,255,0.78);
+  --muted2: rgba(255,255,255,0.6);
+  --accent: #8bb3ff;
+}
 
-    /* ✅ Global font bump for readability (esp. small devices) */
-    body{
-      font-family: sans-serif;
-      background: linear-gradient(180deg, var(--bgTop), var(--bgBottom));
-      margin:0;
-      padding:1rem;
-      color:var(--text);
-      font-size:18px;
-    }
+/* ===== Base ===== */
+*{ box-sizing:border-box; }
 
-    h1{
-      text-align:center;
-      color:var(--primary);
-      font-weight:800;
-      letter-spacing:0.06em;
-      margin:0.5rem 0 1rem 0;
-    }
+body{
+  font-family: sans-serif;
+  background: radial-gradient(1200px 700px at 20% 0%, #0f2a76 0%, var(--bg1) 35%, var(--bg2) 100%);
+  margin:0;
+  padding: 28px 16px 48px;
+  color: var(--text);
+  font-size: 18px;
+}
 
-    .card{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius:14px;
-      padding:1.5rem;
-      margin:1rem auto;
-      max-width:860px; /* a bit wider feels more “official” */
-      box-shadow:none;
-      backdrop-filter: blur(6px);
-    }
+i, em { font-style: normal !important; }
 
-    /* ✅ Slightly bigger controls */
-    select, button, input{
-      font-size:1.15rem;
-      padding:0.65rem;
-      margin:0.5rem 0;
-      border-radius:10px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-      outline:none;
-    }
+/* ===== Page header ===== */
+h1{
+  max-width: 880px;
+  margin: 0 auto 14px;
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+  font-size: clamp(26px, 3.2vw, 40px);
+}
+h1::before{
+  content:"+";
+  display:inline-grid;
+  place-items:center;
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+  background: rgba(140, 140, 255, 0.18);
+  border: 1px solid rgba(170, 170, 255, 0.28);
+  color: #e9ecff;
+  font-weight: 900;
+}
 
-    select option { color:#111; } /* dropdown list readability on some browsers */
+/* ===== Top navigation buttons ===== */
+.nav-buttons{
+  max-width: 880px;
+  margin: 0 auto 18px;
+  display:flex;
+  justify-content:flex-start;
+  gap: 12px;
+  flex-wrap:wrap;
+}
 
-    button{
-      background: rgba(255,255,255,0.10);
-      color: var(--text);
-      cursor:pointer;
-      transition:0.15s;
-      border:1px solid rgba(255,255,255,0.35);
-      font-weight:700;
-      letter-spacing:0.03em;
-    }
-    button:hover{ background: rgba(255,255,255,0.16); }
-    button:disabled{ background: rgba(255,255,255,0.06); cursor:not-allowed; opacity:0.6; }
+.nav-buttons button{
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 750;
+  cursor:pointer;
+  transition: 0.15s;
+}
+.nav-buttons button:hover{
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.28);
+}
 
-    /* ✅ Remove italics everywhere */
-    i, em { font-style: normal !important; }
+/* ===== Cards / Panels ===== */
+.card{
+  max-width: 880px;
+  margin: 0 auto 16px;
+  padding: 22px 22px 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+  border: 1px solid var(--border);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.35);
+  backdrop-filter: blur(8px);
+}
 
-    /* ✅ Bigger, bold, no italics for questions */
-    .question{
-      font-size:2.1rem;
-      font-weight:750;
-      font-style:normal;
-      margin:1.2rem 0 0.9rem 0;
-      line-height:1.32;
-      color: var(--text);
-    }
-    /* Force-disable italics if any slip through */
-    .question i, .question em, #answer i, #answer em { font-style:normal !important; }
+/* ===== Form typography ===== */
+label strong{
+  display:block;
+  margin: 12px 0 8px;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+}
 
-    .reference{
-      font-weight:700;
-      color: var(--muted);
-      letter-spacing:0.02em;
-      font-size:1.05rem;
-    }
+/* ===== Inputs / selects ===== */
+select, input, button{
+  font-family: inherit;
+}
 
-    .answer{
-      margin:1rem 0;
-      padding:1rem;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.16);
-      border-radius:12px;
-      display:none;
-      color: var(--text);
-      font-size:1.15rem;
-      line-height:1.45;
-    }
+select, input{
+  width: min(420px, 100%);
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  outline: none;
+}
 
-    .timer{
-      font-size:2.0rem;
-      text-align:center;
-      color: var(--muted);
-      margin:0.6rem 0 0.2rem 0;
-      font-weight:800;
-      letter-spacing:0.03em;
-    }
+select:focus, input:focus{
+  border-color: rgba(139,179,255,0.75);
+  box-shadow: 0 0 0 4px rgba(139,179,255,0.18);
+}
 
-    .timer-note{
-      text-align:center;
-      font-size:1.05rem;
-      color: var(--muted2);
-      margin-top:-0.25rem;
-    }
+/* Multi-select sizing */
+#chapterSelect{
+  width: min(520px, 100%);
+  padding: 10px;
+}
 
-    .options{
-      display:flex;
-      gap:1rem;
-      justify-content:center;
-      margin-top:1rem;
-    }
+/* Make options readable in dark theme (works in most browsers) */
+select option{
+  background: #0b1740;
+  color: #fff;
+}
 
-    .summary{ text-align:center; font-size:1.4rem; }
-    .hidden{ display:none; }
+/* ===== Primary buttons ===== */
+button{
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.10);
+  color: var(--text);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition: 0.15s;
+}
+button:hover{
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.30);
+}
+button:disabled{
+  opacity: 0.5;
+  cursor:not-allowed;
+}
 
-    /* Simplify colours: only neutral button styles */
-    .got-it{ background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.55); }
-    .incorrect{ background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.35); }
-    .partial-btn{ background: rgba(255,255,255,0.10); color:white; border-color: rgba(255,255,255,0.35); }
-    .skip-btn{ background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.25); }
+/* Make Start Quiz feel like a main CTA */
+#config button{
+  margin-top: 14px;
+  width: min(320px, 100%);
+  background: rgba(139,179,255,0.22);
+  border-color: rgba(139,179,255,0.35);
+}
+#config button:hover{
+  background: rgba(139,179,255,0.28);
+}
 
-    .test-complete{
-      font-size:1.6rem;
-      color: var(--primary);
-      margin-bottom:1rem;
-      display:block !important;
-      font-weight:800;
-      text-align:center;
-      letter-spacing:0.04em;
-    }
+/* ===== Quiz typography ===== */
+.reference{
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
 
-    .card button, .summary button{
-      display:block;
-      margin:0.5rem auto;
-      width:100%;
-      max-width:240px;
-    }
-    .options button{ flex:1; max-width:none; }
+.question{
+  font-size: clamp(22px, 2.4vw, 34px);
+  font-weight: 850;
+  line-height: 1.25;
+  margin: 14px 0 12px;
+}
 
-    /* ✅ Mobile bump */
-    @media (max-width:480px){
-      body{ font-size:19px; }
-      .card{ padding:1rem; }
-      .options{ flex-direction:column; }
-      .question{ font-size:1.75rem; }
-      select, button, input{ font-size:1.2rem; }
-      .timer{ font-size:2.05rem; }
-      .timer-note{ font-size:1.05rem; }
-    }
+.answer{
+  margin: 14px 0;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  display:none;
+}
 
-    .footer-credit{
-      position:fixed;
-      bottom:10px;
-      right:10px;
-      font-size:0.85rem;
-      color: rgba(255,255,255,0.55);
-      text-align:right;
-      z-index:1000;
-    }
+/* ===== Timer ===== */
+.timer{
+  font-size: 1.8rem;
+  font-weight: 900;
+  text-align:center;
+  color: rgba(255,255,255,0.78);
+  margin: 8px 0 2px;
+}
+.timer-note{
+  text-align:center;
+  font-size: 1rem;
+  color: var(--muted2);
+  margin: 0 0 10px;
+}
 
-    .isaiah-summary, .isaiah-commentary{
-      max-width:800px;
-      line-height:1.6;
-      text-align:left;
-      color: var(--text);
-    }
-    .isaiah-summary h2{
-      color: var(--primary);
-      text-align:center;
-      font-size:2rem;
-      letter-spacing:0.04em;
-      font-weight:800;
-    }
-    .isaiah-summary h3, .isaiah-commentary h3{
-      color: var(--muted);
-      font-size:1.4rem;
-      margin-top:1.5rem;
-      font-weight:800;
-    }
-    .isaiah-summary p, .isaiah-commentary p{
-      margin-bottom:1rem;
-      font-size:1.15rem;
-      color: var(--muted);
-    }
-    .isaiah-summary ol{ padding-left:1.5rem; }
-    .isaiah-summary li{ margin-bottom:0.5rem; font-size:1.15rem; color: var(--muted); }
+/* ===== Option button rows ===== */
+.options{
+  display:flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+.options button{
+  flex:1;
+}
 
-    .nav-buttons{ text-align:center; margin:1rem 0; }
-    .nav-buttons button{ margin:0 0.5rem; }
+/* ===== Summary ===== */
+.summary{
+  text-align:center;
+}
+.summary h2{
+  margin-top: 0;
+  font-weight: 900;
+}
+.test-complete{
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text);
+}
 
-    .wizard-step{ display:none; }
-    .wizard-step.active{ display:block; }
-    .wizard-progress{
-      text-align:center;
-      margin:1rem 0;
-      font-size:1.2rem;
-      color: var(--muted);
-      font-weight:800;
-      letter-spacing:0.03em;
-    }
-    .wizard-buttons{
-      display:flex;
-      justify-content:space-between;
-      gap:1rem;
-      margin-top:1.5rem;
-    }
-    .wizard-buttons button{ flex:1; max-width:150px; }
+/* ===== Helpers ===== */
+.hidden{ display:none; }
 
-    .wizard-finished{
-      text-align:center;
-      font-size:1.5rem;
-      color: var(--primary);
-      padding:1rem;
-      font-weight:800;
-    }
+.footer-credit{
+  position:fixed;
+  bottom:10px;
+  right:10px;
+  font-size:0.85rem;
+  color: rgba(255,255,255,0.45);
+  text-align:right;
+  z-index:1000;
+}
 
-    .name-prompt{
-      text-align:center;
-      padding:1rem;
-      background: rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.18);
-      border-radius:12px;
-      margin:1rem 0;
-      color: var(--text);
-    }
-    @media (max-width:480px){
-      .wizard-buttons{ flex-direction:column; }
-    }
-  </style>
+/* ===== Mobile ===== */
+@media (max-width: 520px){
+  body{ padding: 18px 12px 44px; font-size: 19px; }
+  .card{ padding: 18px 16px; border-radius: 16px; }
+  .options{ flex-direction: column; }
+  select, input{ width: 100%; }
+  #chapterSelect{ width: 100%; }
+}
+</style>
 </head>
 <body>
   <h1>✝️ Oxford ABE ReadyAnswers</h1>
