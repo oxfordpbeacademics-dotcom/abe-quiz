@@ -6,11 +6,15 @@
   <title>Oxford ABE ReadyAnswers Quiz</title>
   <style>
     :root { --primary:#4CAF50; --light:#f9f9f9; --dark:#333; }
+
+    /* ✅ Global font bump for readability (esp. small devices) */
     body {
       font-family:'Comic Sans MS', cursive, sans-serif;
       background:linear-gradient(to bottom,#e0f7fa,#ffffff);
       margin:0; padding:1rem; color:var(--dark);
+      font-size:18px;
     }
+
     h1 { text-align:center; color:var(--primary); }
 
     .card{
@@ -18,17 +22,23 @@
       margin:1rem auto; max-width:600px;
       box-shadow:0 4px 12px rgba(0,0,0,0.1);
     }
+
+    /* ✅ Slightly bigger controls */
     select, button, input{
-      font-size:1.1rem; padding:0.6rem; margin:0.5rem 0;
+      font-size:1.15rem; padding:0.65rem; margin:0.5rem 0;
       border-radius:8px; border:1px solid #ccc;
     }
+
     button{ background:var(--primary); color:white; cursor:pointer; transition:0.2s; }
     button:hover{ background:#45a049; }
     button:disabled{ background:#ccc; cursor:not-allowed; opacity:0.6; }
 
+    /* ✅ Remove italics everywhere */
+    i, em { font-style: normal !important; }
+
     /* ✅ Bigger, bold, no italics for questions */
     .question{
-      font-size:1.6rem;
+      font-size:1.75rem;
       font-weight:800;
       font-style:normal;
       margin:1.5rem 0;
@@ -39,7 +49,10 @@
 
     .reference{ font-weight:bold; color:var(--primary); }
     .answer{ margin:1rem 0; padding:1rem; background:#e8f5e9; border-radius:8px; display:none; }
-    .timer{ font-size:2rem; text-align:center; color:#ff9800; margin:1rem 0; font-weight:bold; }
+
+    .timer{ font-size:2.1rem; text-align:center; color:#ff9800; margin:1rem 0; font-weight:bold; }
+    .timer-note{ text-align:center; font-size:1.05rem; color:#666; margin-top:-0.5rem; }
+
     .options{ display:flex; gap:1rem; justify-content:center; margin-top:1rem; }
     .summary{ text-align:center; font-size:1.4rem; }
     .hidden{ display:none; }
@@ -58,15 +71,20 @@
     .options button{ flex:1; max-width:none; }
     .skip-btn{ background:#757575; }
 
+    /* ✅ Mobile bump */
     @media (max-width:480px){
+      body{ font-size:19px; }
       .card{ padding:1rem; }
       .options{ flex-direction:column; }
-      .question{ font-size:1.45rem; }
+      .question{ font-size:1.6rem; }
+      select, button, input{ font-size:1.2rem; }
+      .timer{ font-size:2.2rem; }
+      .timer-note{ font-size:1.1rem; }
     }
 
     .footer-credit{
       position:fixed; bottom:10px; right:10px;
-      font-size:0.8rem; color:#666; text-align:right; z-index:1000;
+      font-size:0.85rem; color:#666; text-align:right; z-index:1000;
     }
 
     .isaiah-summary, .isaiah-commentary{
@@ -76,9 +94,9 @@
     .isaiah-summary h3, .isaiah-commentary h3{
       color:#ff9800; font-size:1.4rem; margin-top:1.5rem; font-weight:bold;
     }
-    .isaiah-summary p, .isaiah-commentary p{ margin-bottom:1rem; font-size:1.1rem; }
+    .isaiah-summary p, .isaiah-commentary p{ margin-bottom:1rem; font-size:1.15rem; }
     .isaiah-summary ol{ padding-left:1.5rem; }
-    .isaiah-summary li{ margin-bottom:0.5rem; font-size:1.1rem; }
+    .isaiah-summary li{ margin-bottom:0.5rem; font-size:1.15rem; }
 
     .nav-buttons{ text-align:center; margin:1rem 0; }
     .nav-buttons button{ margin:0 0.5rem; }
@@ -295,7 +313,10 @@
   <div id="quiz" class="card hidden">
     <div class="reference" id="ref"></div>
     <div class="question" id="qtext"></div>
+
     <div class="timer" id="timer">30</div>
+    <div class="timer-note" id="timerNote"></div>
+
     <div class="answer" id="answer"></div>
 
     <div class="options" id="preAnswerOptions">
@@ -303,7 +324,7 @@
         type="text"
         id="userInput"
         placeholder="Type your answer here..."
-        style="display:none; width:100%; padding:0.5rem; font-size:1rem; margin-top:0.5rem;"
+        style="display:none; width:100%; padding:0.5rem; font-size:1.1rem; margin-top:0.5rem;"
       />
       <button id="showAnswer" onclick="onShowAnswer()">Show Answer ❓</button>
       <button id="skipBtn" class="skip-btn" onclick="onSkip()">Skip ⏭️</button>
@@ -355,13 +376,18 @@
       "Revelation": 22, "Romans": 16, "Ruth": 4, "Song of Solomon": 8, "Titus": 3,
       "Zechariah": 14, "Zephaniah": 3
     };
-	const FIXED_BOOK = "Isaiah";
-	const ISAIAH_CHAPTER_MIN = 6;
-	const ISAIAH_CHAPTER_MAX = 19;
+    const FIXED_BOOK = "Isaiah";
+    const ISAIAH_CHAPTER_MIN = 6;
+    const ISAIAH_CHAPTER_MAX = 19;
 
     let allQuestions = [], quizQuestions = [], currentIdx = 0;
     let earned = 0, possible = 0, userName = '';
     let timerInterval = null, timeLeft = 30;
+
+    /* ✅ NEW: delay timer so countdown starts 5 seconds after question appears */
+    let delayInterval = null;
+    let delayLeft = 0;
+
     let questionLogs = [];
     let quizStartTime = 0;
     let currentQuestionData = {};
@@ -383,6 +409,11 @@
     function removeItalicsTags(html) {
       return String(html || "")
         .replace(/<\/?(i|em)\b[^>]*>/gi, "");
+    }
+
+    function clearAllTimers() {
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      if (delayInterval) { clearInterval(delayInterval); delayInterval = null; }
     }
 
     // Navigation functions
@@ -655,45 +686,41 @@
       updateStepCommentary();
     }
 
-	async function loadConfig() {
-	  try {
-		const response = await fetch(API_URL);
-		if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    async function loadConfig() {
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
-		const data = await response.json();
-		allQuestions = Array.isArray(data) ? data : [];
+        const data = await response.json();
+        allQuestions = Array.isArray(data) ? data : [];
 
-		if (allQuestions.length === 0) {
-		  throw new Error('No questions found in data.');
-		}
+        if (allQuestions.length === 0) {
+          throw new Error('No questions found in data.');
+        }
 
-		// ✅ Force book list to ONLY Isaiah
-		const bookSel = document.getElementById('bookSelect');
-		bookSel.innerHTML = '';
-		const opt = document.createElement('option');
-		opt.value = FIXED_BOOK;
-		opt.textContent = FIXED_BOOK;
-		bookSel.appendChild(opt);
-		bookSel.value = FIXED_BOOK;
+        // ✅ Force book list to ONLY Isaiah
+        const bookSel = document.getElementById('bookSelect');
+        bookSel.innerHTML = '';
+        const opt = document.createElement('option');
+        opt.value = FIXED_BOOK;
+        opt.textContent = FIXED_BOOK;
+        bookSel.appendChild(opt);
+        bookSel.value = FIXED_BOOK;
 
-		// ✅ Show ONLY Isaiah chapters 6–19
-		const chapSel = document.getElementById('chapterSelect');
-		chapSel.innerHTML = '';
-		for (let i = ISAIAH_CHAPTER_MIN; i <= ISAIAH_CHAPTER_MAX; i++) {
-		  const copt = document.createElement('option');
-		  copt.value = i;
-		  copt.textContent = `Chapter ${i}`;
-		  chapSel.appendChild(copt);
-		}
-
-		// Optional: preselect all chapters 6–19
-		// Array.from(chapSel.options).forEach(o => o.selected = true);
-
-	  } catch (error) {
-		console.error('Load config failed:', error);
-		alert(`Error loading quiz config: ${error.message}\n\nCheck browser console (F12) for details.`);
-	  }
-	}
+        // ✅ Show ONLY Isaiah chapters 6–19
+        const chapSel = document.getElementById('chapterSelect');
+        chapSel.innerHTML = '';
+        for (let i = ISAIAH_CHAPTER_MIN; i <= ISAIAH_CHAPTER_MAX; i++) {
+          const copt = document.createElement('option');
+          copt.value = i;
+          copt.textContent = `Chapter ${i}`;
+          chapSel.appendChild(copt);
+        }
+      } catch (error) {
+        console.error('Load config failed:', error);
+        alert(`Error loading quiz config: ${error.message}\n\nCheck browser console (F12) for details.`);
+      }
+    }
 
     async function startQuiz() {
       userName = document.getElementById('userName').value.trim();
@@ -752,7 +779,7 @@
     }
 
     function showQuestion() {
-      clearInterval(timerInterval);
+      clearAllTimers();
 
       const q = quizQuestions[currentIdx];
       document.getElementById('ref').textContent = `${q.Book} ${q.Chapter}:${q.Verse}`;
@@ -760,10 +787,12 @@
       const rawQuestion = q.QuestionText || q.Question || "⚠️ (No question text found)";
       const questionText = removeItalicsTags(rawQuestion);
 
+      const marks = parseInt(q.MarkValue) || 1;
+
       document.getElementById('qtext').innerHTML = `
         ${questionText}
-        <div style="font-size:1rem; color:#555; margin-top:0.5rem; font-weight:600;">
-          <strong>${q.MarkValue || 1} point${(parseInt(q.MarkValue) || 1) > 1 ? 's' : ''}</strong>
+        <div style="font-size:1.05rem; color:#555; margin-top:0.5rem; font-weight:700;">
+          <strong>${marks} point${marks > 1 ? 's' : ''}</strong>
         </div>
       `;
 
@@ -771,7 +800,7 @@
       document.getElementById('answer').innerHTML = `<strong>Answer:</strong> ${removeItalicsTags(q.AnswerText)}`;
 
       const inputEl = document.getElementById('userInput');
-      if ((parseInt(q.MarkValue) || 1) >= 3) {
+      if (marks >= 3) {
         inputEl.style.display = 'block';
         inputEl.value = '';
         inputEl.placeholder = 'Type your answer before revealing...';
@@ -795,40 +824,68 @@
         timedOut: false
       };
 
-      timeLeft = 25;
+      // ✅ NEW RULES:
+      // - Default time: 30 seconds
+      // - If marks > 3: 35 seconds
+      // - Countdown starts 5 seconds after question is shown
+      const baseTime = (marks > 3) ? 35 : 30;
+      timeLeft = baseTime;
+
       const timerEl = document.getElementById('timer');
+      const noteEl = document.getElementById('timerNote');
+
       timerEl.style.color = '#ff9800';
       timerEl.textContent = timeLeft;
       timerEl.classList.remove('hidden');
 
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        timerEl.textContent = timeLeft;
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          onTimeout();
+      delayLeft = 5;
+      noteEl.textContent = `Starting in ${delayLeft}...`;
+
+      // delay countdown note
+      delayInterval = setInterval(() => {
+        delayLeft--;
+        if (delayLeft > 0) {
+          noteEl.textContent = `Starting in ${delayLeft}...`;
+        } else {
+          clearInterval(delayInterval);
+          delayInterval = null;
+          noteEl.textContent = ''; // clear note once timer starts
+
+          // start real countdown
+          timerInterval = setInterval(() => {
+            timeLeft--;
+            timerEl.textContent = timeLeft;
+            if (timeLeft <= 0) {
+              clearInterval(timerInterval);
+              timerInterval = null;
+              onTimeout();
+            }
+          }, 1000);
         }
       }, 1000);
     }
 
     function onShowAnswer() {
-      clearInterval(timerInterval);
+      clearAllTimers();
+      document.getElementById('timerNote').textContent = '';
       const userTyped = document.getElementById('userInput').value.trim();
       currentQuestionData.userTypedAnswer = userTyped || '(no answer given)';
       revealAnswerForFeedback('showAnswer');
     }
 
     function onSkip() {
-      clearInterval(timerInterval);
+      clearAllTimers();
+      document.getElementById('timerNote').textContent = '';
       revealAnswerImmediateIncorrect();
     }
 
     function onTimeout() {
       currentQuestionData.timedOut = true;
       const timerEl = document.getElementById('timer');
+      document.getElementById('timerNote').textContent = '';
       timerEl.textContent = '⏰ Time’s up!';
       timerEl.style.color = '#f44336';
-      clearInterval(timerInterval);
+      clearAllTimers();
       // user still presses "Show Answer"
     }
 
@@ -838,6 +895,7 @@
       document.getElementById('markOptions').classList.remove('hidden');
       document.getElementById('partialOptions').classList.add('hidden');
       document.getElementById('timer').classList.add('hidden');
+      document.getElementById('timerNote').textContent = '';
 
       currentQuestionData.timeToViewAnswer = Math.round((Date.now() - currentQuestionData.questionStartTime) / 1000);
       currentQuestionData.clickPattern = trigger;
@@ -849,6 +907,7 @@
       document.getElementById('markOptions').classList.add('hidden');
       document.getElementById('partialOptions').classList.add('hidden');
       document.getElementById('timer').classList.add('hidden');
+      document.getElementById('timerNote').textContent = '';
 
       const marks = parseInt(quizQuestions[currentIdx].MarkValue) || 1;
       possible += marks;
@@ -934,7 +993,8 @@
     }
 
     async function showSummary() {
-      clearInterval(timerInterval);
+      clearAllTimers();
+      document.getElementById('timerNote').textContent = '';
 
       document.getElementById('summaryBtn').disabled = false;
       document.getElementById('commentaryBtn').disabled = false;
